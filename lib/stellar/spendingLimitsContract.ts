@@ -162,6 +162,14 @@ export function setMockSpendingLimitsFallback(limits: SpendingLimit[]) {
   }
 }
 
+/**
+ * Converts a JavaScript value into a Soroban `ScVal`.
+ * 56-character strings starting with `G` are treated as Stellar addresses,
+ * numbers are encoded as `u64`, and everything else uses default conversion.
+ *
+ * @param value - The value to convert.
+ * @returns The corresponding `ScVal`.
+ */
 function toScVal(value: unknown) {
   if (typeof value === 'string' && value.startsWith('G') && value.length === 56) {
     return new Address(value).toScVal();
@@ -172,6 +180,15 @@ function toScVal(value: unknown) {
   return nativeToScVal(value);
 }
 
+/**
+ * Invokes a read-only contract method by building and simulating a transaction.
+ *
+ * @param publicKey - Public key of the account used as the simulation source.
+ * @param contractId - ID of the contract to call.
+ * @param method - Name of the contract method to invoke.
+ * @param args - Method arguments, converted to `ScVal` via `toScVal`.
+ * @returns The decoded result of the simulated call.
+ */
 async function callContractView<T>(
   publicKey: string,
   contractId: string,
